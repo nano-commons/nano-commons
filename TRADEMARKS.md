@@ -32,9 +32,9 @@ Official channels are listed here once they exist. Anything not listed is unoffi
 
 | Channel | Address |
 | :--- | :--- |
-| Source repository | *(to be added at first publication)* |
-| Mirror | *(to be added)* |
-| Website | *(to be added)* |
+| Source repository | https://github.com/nano-commons/nano-commons |
+| Mirror | https://codeberg.org/nano-commons/nano-commons |
+| Website | *(none yet)* |
 
 ## Status
 

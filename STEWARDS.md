@@ -4,7 +4,15 @@ Stewards review changes, coordinate releases and record consensus (see [GOVERNAN
 
 | Name | Organisation / community | Since | Contact |
 | :--- | :--- | :--- | :--- |
-| Krittidet Chanthake | Initiator (independent) | November 2026 | *(to be added)* |
+| Krittidet Chanthake | Initiator (independent) | November 2026 | GitHub: `kittipongkj56-png` |
+
+## Signing keys
+
+Every steward signs commits and tags. Check the signatures against these fingerprints.
+
+| Steward | Key type | Fingerprint |
+| :--- | :--- | :--- |
+| Krittidet Chanthake | SSH ED25519 (signing) | `SHA256:bCFDHSkDYcpZKW/3G/Ze21e9kD4TiG8+C9TmhHqg/k0` |
 
 ## Bootstrap status
 

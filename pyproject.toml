@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nano-commons"
+version = "0.2.0"
+description = "Nano-Commons Protocol reference implementation with a local node console (web page, CLI, HTTP API)"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "Krittidet Chanthake (initiator)" }, { name = "The Nano-Commons contributors" }]
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE", "NOTICE"]
+dependencies = ["cryptography>=42"]
+
+[project.scripts]
+nano-commons = "nano_commons.cli:main"
+
+[tool.setuptools]
+packages = ["nano_commons"]
+
+[tool.setuptools.package-data]
+nano_commons = ["web/index.html"]

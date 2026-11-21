@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use or build on the Nano-Commons Protocol, please cite it as below."
+title: "The Nano-Commons Protocol"
+abstract: >-
+  A protocol for tiny autonomous agents that run on volunteer and edge
+  computers. Results are signed, cross-checked by independent nodes, weighted
+  by earned reputation, capped so that no region decides alone, and audited
+  against canary tasks with known answers. Owned by everyone; no token; no
+  central server.
+type: software
+authors:
+  - given-names: Krittidet
+    family-names: Chanthake
+    role: "Initiator and Genesis Author"
+  - name: "The Nano-Commons contributors"
+version: "0.2.0"
+license: AGPL-3.0-or-later
+keywords:
+  - decentralised AI
+  - public good
+  - verifiable computation
+  - canary tasks
+  - commons

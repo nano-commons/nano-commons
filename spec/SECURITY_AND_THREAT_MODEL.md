@@ -94,7 +94,8 @@ The Nano-Commons Protocol invites anyone to contribute compute, so it uses a **z
 **Mitigations:**
 - **[implemented]** Every hop lowers `ttl` and `energy_budget`. A packet whose TTL is outside `1..host_max_ttl`, or whose energy cannot cover the next hop, is refused.
 - **[implemented]** `freshness` decays at each hop, and hosts may set `min_freshness`.
-- **[planned]** A WebAssembly sandbox with hard CPU, memory, bandwidth and concurrency caps that agent code cannot override.
+- **[implemented]** In v0.2, agents carry **no executable code**. The agent loop is fixed host code, and a packet carries only data (parameters, observation hashes, counters), so a packet cannot run arbitrary instructions on a host.
+- **[planned]** A WebAssembly sandbox with capability-based permissions and hard CPU, memory, time, bandwidth and concurrency caps that agent code cannot override. It must exist **before** any packet or mission may carry executable code, including the AI-generated code proposed in NCP-0002 §3.4.
 
 ### 2.8 Split-brain, knowledge drift and catastrophic forgetting
 
@@ -126,6 +127,41 @@ The Nano-Commons Protocol invites anyone to contribute compute, so it uses a **z
 
 ---
 
+### 2.11 Untrue observations ("garbage in")
+
+**Threat:** `observation_hash` proves that an input was not changed after signing. It does not prove that the input was true. A spoofed sensor, a manipulated upstream feed or a dishonest fetcher can supply false data that is then signed and processed correctly.
+
+**Mitigations:**
+- **[implemented]** Canary tasks score workers against ground truth.
+- **[planned]** Neighbour cross-checks that flag implausible readings as `SUSPECT` (proposed in NCP-0001, in preparation).
+- **[operational]** Missions take each input from several independent fetchers or sources, and use it only when their raw-data hashes agree (Mission 01 §5.3).
+- **[operational]** Inputs come from public sources wherever possible, so that anyone can re-fetch and audit them.
+- **[planned]** Device or gateway keys that sign readings at the source.
+
+### 2.12 Alarm abuse (denial of service)
+
+**Threat:** The alarm is designed to fail safe. Any canary that most of its own weight answers wrong raises a mesh-wide alarm, and ordinary results are then held. An attacker who controls enough weight in a single canary's worker set can therefore fail canaries on purpose to freeze a mission.
+
+**Mitigations:**
+- **[implemented]** Every failed canary is a recorded fault under the repeat-penalty rule. An attacker who triggers alarms loses reputation quickly and is quarantined, so the attack costs the attacker.
+- **[implemented]** An alarm clears only when the workers that failed, weighted among themselves, pass a canary. Honest nodes cannot be blamed for it.
+- **[planned]** Scope alarms to the affected worker set or zone instead of the whole mesh.
+- **[planned]** Require a minimum zone diversity before a canary may raise a mesh-wide alarm.
+- **[planned]** Rate-limit alarms per worker set, and publish alarm statistics so that abuse is visible.
+
+### 2.13 Adaptive and timing attacks
+
+**Threat:**
+- **Selective attack.** An attacker keeps its reputation above the quarantine threshold by answering honestly most of the time, and lies only on tasks of high value or impact.
+- **Timing attack.** An attacker times its attack for periods when honest nodes are offline, so its share of the weight is larger than usual.
+
+**Mitigations:**
+- **[implemented]** The quorum is above 50%, zones are capped, and there is a minimum number of non-quarantined workers. Repeat faults are penalised steeply (−0.18), so even a rare lie is costly.
+- **[implemented]** Canaries are indistinguishable from real work when worker sets are bound and audit state is hidden, so honest behaviour cannot be saved for canaries only.
+- **[planned]** Scale with impact: require more workers (K), higher reputation and more canaries for high-impact missions.
+- **[planned]** Increase the canary rate when participation drops, and refuse decisions when the active worker pool falls below a mission-defined floor.
+- **[planned]** Assign workers at random from the healthy pool, so that an attacker cannot predict or choose when it will judge.
+
 ## 3. Verification and scoring rules (summary)
 
 | Rule | Value |
@@ -153,3 +189,8 @@ Exact definitions are in [`PROTOCOL_AND_CONSENSUS.md`](PROTOCOL_AND_CONSENSUS.md
 | **Penalty calibration** | An honest node that is wrong twice is treated like a poisoner. | Calibrate on public-testnet error rates |
 | **Unrevoked gains** | Rollback does not undo reputation or credits earned before an alarm. | Credit clawback for producers of tainted checkpoints |
 | **No network or sandbox yet** | The reference implementation runs in one process. | P2P transport and a WebAssembly runtime (roadmap Phase 1) |
+| **Untrue inputs** | Signatures and hashes prove integrity, not truth (§2.11). | Multiple independent fetchers; source-signed readings; canaries from reference data |
+| **Alarm abuse** | A mesh-wide alarm can be triggered on purpose to freeze a mission (§2.12). | Alarms scoped to a worker set or zone; diversity requirements; rate limits |
+| **Selective and timing attacks** | Attackers lie only on high-value tasks or when honest nodes are offline (§2.13). | Impact-scaled K and canary rates; participation floors; random worker assignment |
+| **Rollback consistency** | Rollback restores the checkpoint chain only. Reputation, credits, CRDT counters and tasks in flight are not rewound, so in a distributed network nodes can briefly disagree. | Define rollback as a signed, replicated event; re-run tasks that were in flight; reconcile counters from the restored checkpoint |
+| **Real-network conditions** | Latency, packet loss, partitions, NAT and changing IP addresses are not yet modelled. | Partition and churn tests in the P2P phase; consensus timeouts; checkpoint reconciliation |

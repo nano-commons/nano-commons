@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Nano-Commons Protocol</title>
+<meta name="description" content="An open network that can tell when its own majority is lying. No token. No owner. Serve, never rule.">
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0
+     © 2026 Krittidet Chanthake and the Nano-Commons contributors -->
+<style>
+:root {
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --text: #1c1b19;
+  --muted: #5d5a54;
+  --line: #e4e0d8;
+  --accent: #1f5f4a;
+  --accent-soft: #e6efe9;
+  --warn: #8a4b0f;
+  --warn-soft: #f7eddf;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Thai", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141513;
+    --surface: #1b1c1a;
+    --text: #ecebe6;
+    --muted: #a7a49c;
+    --line: #2e2f2b;
+    --accent: #7cc4a6;
+    --accent-soft: #1f2d27;
+    --warn: #e2b07a;
+    --warn-soft: #2c241a;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.6 var(--sans);
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+.wrap { max-width: 920px; margin: 0 auto; padding: 0 20px; }
+header.top {
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+}
+header.top .wrap { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand { font-weight: 650; letter-spacing: -0.01em; color: var(--text); text-decoration: none; }
+nav a { margin-left: 18px; font-size: 15px; color: var(--muted); text-decoration: none; }
+nav a:hover { color: var(--text); }
+.wrap.hero { padding: 72px 20px 48px; }
+.grid > *, .two > * { min-width: 0; }
+p, td, li { overflow-wrap: break-word; }
+td code { word-break: break-all; }
+.hero h1 {
+  font-size: clamp(32px, 5.4vw, 52px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin: 0 0 18px;
+  font-weight: 700;
+}
+.hero p.lead { font-size: clamp(18px, 2.4vw, 21px); color: var(--muted); max-width: 680px; margin: 0 0 28px; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 0 0 32px; padding: 0; list-style: none; font-size: 15px; }
+.facts li::before { content: "— "; color: var(--muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn {
+  display: inline-block; padding: 11px 18px; border-radius: 6px; text-decoration: none;
+  font-weight: 600; font-size: 15px; border: 1px solid var(--accent);
+}
+.btn.primary { background: var(--accent); color: var(--bg); }
+.btn.secondary { color: var(--accent); }
+.notice {
+  margin: 0 0 8px; padding: 12px 16px; border-radius: 6px;
+  background: var(--warn-soft); color: var(--warn); font-size: 15px;
+}
+section { padding: 52px 0; border-top: 1px solid var(--line); }
+section h2 { font-size: 26px; letter-spacing: -0.01em; margin: 0 0 8px; }
+section p.sub { color: var(--muted); margin: 0 0 28px; max-width: 700px; }
+.grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
+.card h3 { margin: 0 0 6px; font-size: 18px; }
+.card p { margin: 0; color: var(--muted); font-size: 15.5px; }
+ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 0; }
+ol.steps li {
+  counter-increment: s; position: relative; padding: 0 0 22px 46px; max-width: 720px;
+}
+ol.steps li::before {
+  content: counter(s); position: absolute; left: 0; top: 0;
+  width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--accent);
+  color: var(--accent); display: grid; place-items: center; font-size: 14px; font-weight: 650;
+}
+ol.steps strong { display: block; }
+ol.steps span { color: var(--muted); font-size: 15.5px; }
+.proof .num { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 6px; }
+.tag {
+  display: inline-block; font-size: 12.5px; padding: 2px 8px; border-radius: 4px; margin-top: 12px;
+  background: var(--accent-soft); color: var(--accent);
+}
+.tag.proposed { background: var(--warn-soft); color: var(--warn); }
+table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 650; color: var(--muted); font-size: 14px; }
+td:first-child { white-space: nowrap; font-weight: 650; }
+.scroll { overflow-x: auto; }
+pre {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  padding: 16px; overflow-x: auto; font: 14px/1.55 var(--mono); margin: 0 0 14px;
+}
+code { font-family: var(--mono); font-size: 0.92em; }
+.two { display: grid; gap: 28px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+ul.plain { padding-left: 20px; margin: 0; }
+ul.plain li { margin-bottom: 6px; }
+footer { border-top: 1px solid var(--line); padding: 36px 0 56px; color: var(--muted); font-size: 14.5px; }
+footer p { margin: 0 0 8px; }
+.notoken { font-weight: 650; color: var(--text); }
+@media (max-width: 560px) {
+  nav a { margin: 0 14px 0 0; }
+  .wrap.hero { padding: 48px 20px 36px; }
+  td:first-child { white-space: normal; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#">Nano-Commons</a>
+    <nav>
+      <a href="#how">How it works</a>
+      <a href="#proof">Evidence</a>
+      <a href="#principles">Principles</a>
+      <a href="#join">Get involved</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <h1>An open network that can tell when its own majority is lying.</h1>
+    <p class="lead">Nano-Commons lets many strangers produce data and knowledge that can be trusted. Results are signed, cross-checked across regions, and audited against questions whose answers are already known. No one owns it, and no one controls it.</p>
+    <ul class="facts">
+      <li>No token, ever</li>
+      <li>No central server</li>
+      <li>No master key</li>
+      <li>Serve, never rule</li>
+    </ul>
+    <p class="notice">Early stage. Version 0.2 is a reference implementation that runs as a testbed on one machine. It is not yet a live network.</p>
+    <div class="actions" style="margin-top:22px">
+      <a class="btn primary" href="https://github.com/nano-commons/nano-commons">Read the code</a>
+      <a class="btn secondary" href="https://github.com/nano-commons/nano-commons/blob/main/WHITEPAPER.md">Read the whitepaper</a>
+    </div>
+  </div>
+
+  <section id="problem">
+    <div class="wrap">
+      <h2>The problem</h2>
+      <p class="sub">Intelligence is becoming infrastructure, but the infrastructure is owned by a few and verified by almost no one.</p>
+      <div class="grid">
+        <div class="card"><h3>Concentrated power</h3><p>A few organisations control the compute, the models and the rules for who gets access.</p></div>
+        <div class="card"><h3>Trust by assertion</h3><p>Users are asked to believe answers they cannot check, from systems they cannot inspect.</p></div>
+        <div class="card"><h3>Majorities can lie</h3><p>Open networks usually treat agreement as truth. A coordinated group with enough weight can make a falsehood "verified".</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <h2>How it works</h2>
+      <p class="sub">Small agents do bounded work. The network checks the work, and then checks itself.</p>
+      <ol class="steps">
+        <li><strong>Signed tasks</strong><span>A mission owner signs each task with an Ed25519 key, binding the exact input data and the workers allowed to judge it.</span></li>
+        <li><strong>A strict admission gate</strong><span>Every node runs 15 checks before doing any work: tampering, replay, stale history and exhausted budgets are all refused.</span></li>
+        <li><strong>Weighted, capped consensus</strong><span>Several independent nodes vote, weighted by earned reputation. No region can hold more than half of the weight, so none can decide alone.</span></li>
+        <li><strong>Canary audits</strong><span>Some tasks are tests with known answers that look exactly like real work. Nodes are scored against the truth, not against the majority.</span></li>
+        <li><strong>Correctable memory</strong><span>Every accepted result is linked into a hash chain that records who produced it. When a coalition is caught, its results are flagged and can be rolled back.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="proof" class="proof">
+    <div class="wrap">
+      <h2>Evidence, not promises</h2>
+      <p class="sub">Every number below comes from code anyone can run. Each one says where it comes from.</p>
+      <div class="grid">
+        <div class="card">
+          <div class="num">70% → caught</div>
+          <p>Two colluding nodes holding 70% of the vote weight win an ordinary task with a false answer. Four canary rounds later they are detected and quarantined, and their result is rolled back.</p>
+          <span class="tag">Released in v0.2 · sim_demo.py</span>
+        </div>
+        <div class="card">
+          <div class="num">11.0 → 1.4</div>
+          <p>A tiny on-packet model learns to correct humidity-inflated air-quality readings. The mean error on held-out reference data falls roughly eightfold, and verdict accuracy rises from 96.4% to 100%.</p>
+          <span class="tag proposed">Prototype · proposed in NCP-0001</span>
+        </div>
+        <div class="card">
+          <div class="num">83% → rejected</div>
+          <p>Poisoners holding 83% of the vote weight try to push a corrupted model update. The network re-runs the training itself, and their candidate does not match, so it is refused.</p>
+          <span class="tag proposed">Prototype · proposed in NCP-0001</span>
+        </div>
+        <div class="card">
+          <div class="num">0 executed</div>
+          <p>The optional local AI brain answers questions and writes code, but never runs generated code and never logs prompts. Tests use bait code to prove it.</p>
+          <span class="tag proposed">Prototype · NCP-0002 §3a</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="principles">
+    <div class="wrap">
+      <h2>Principles</h2>
+      <p class="sub">The long-term charter, proposed as draft NCP-0004, sets one rule above all others: Nano-Commons serves; it never rules.</p>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Principle</th><th>What it means</th></tr></thead>
+          <tbody>
+            <tr><td>P1 Serve, never rule</td><td>Humans keep final authority over decisions about human lives, rights and nature.</td></tr>
+            <tr><td>P2 Do no harm</td><td>No weapons, targeting, military or intelligence operations, mass surveillance or election manipulation. Humanitarian work is allowed if its outputs are public.</td></tr>
+            <tr><td>P3 Owned by no one</td><td>No token, no equity, no central server. Contributors keep their copyright under copyleft licences.</td></tr>
+            <tr><td>P4 Accountable AI</td><td>Every AI in the network has no authority of its own, can be identified and audited, and can be stopped by any operator.</td></tr>
+            <tr><td>P5 Verifiable truth</td><td>Methods and evidence are public, including evidence against the network itself.</td></tr>
+            <tr><td>P6 Free intelligence</td><td>A baseline of capacity, including AI assistance, is free for everyone.</td></tr>
+            <tr><td>P7 Privacy and dignity</td><td>Personal data stays local by default. No data about people is sold.</td></tr>
+            <tr><td>P8 Freedom to fork</td><td>Anyone may leave or fork at any time. That freedom is the final safeguard.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="limits">
+    <div class="wrap">
+      <h2>What it cannot do</h2>
+      <p class="sub">Honesty is part of safety.</p>
+      <div class="two">
+        <ul class="plain">
+          <li>It cannot prevent wars. It can make the truth harder to fake.</li>
+          <li>It cannot control AI systems it does not run. It can offer them an open, voluntary audit.</li>
+          <li>Tiny agents are not as capable as large models. Their strength is that they can be verified.</li>
+        </ul>
+        <ul class="plain">
+          <li>Peer-to-peer networking and sandboxing are not built yet.</li>
+          <li>Sybil resistance and independent verifiers are open problems.</li>
+          <li>Changes to the protocol wait until the project has at least three stewards from at least two organisations.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="missions">
+    <div class="wrap">
+      <h2>First mission: verified air quality in Northern Thailand</h2>
+      <p class="sub">During the haze season, people decide every day from readings that are either accurate but sparse, or dense but unverified.</p>
+      <div class="grid">
+        <div class="card"><h3>Open data, zero cost</h3><p>Uses public PM2.5 data and volunteers' existing computers. Nothing to buy.</p></div>
+        <div class="card"><h3>Reference stations as canaries</h3><p>Official stations supply the known answers, held out so the test is never circular.</p></div>
+        <div class="card"><h3>Reproducible by anyone</h3><p>Every operator who replays past seasons must get identical checkpoint hashes.</p></div>
+      </div>
+      <p style="margin-top:20px"><a href="https://github.com/nano-commons/nano-commons/blob/main/missions/mission-01-pm25-north.md">Read the mission plan</a></p>
+    </div>
+  </section>
+
+  <section id="join">
+    <div class="wrap">
+      <h2>Get involved</h2>
+      <p class="sub">Everyone who contributes becomes one of its owners, under the same rules as everyone else.</p>
+      <div class="two">
+        <div>
+          <h3 style="margin:0 0 10px">Run your own node console</h3>
+          <pre>git clone https://github.com/nano-commons/nano-commons
+cd nano-commons
+pip install .
+nano-commons serve</pre>
+          <p style="margin:0;color:var(--muted);font-size:15px">The console controls only your machine. There is no central Nano-Commons server. <a href="https://github.com/nano-commons/nano-commons/blob/main/docs/USAGE.md">Usage guide</a></p>
+        </div>
+        <div>
+          <h3 style="margin:0 0 10px">Other ways to help</h3>
+          <ul class="plain">
+            <li><a href="https://github.com/nano-commons/nano-commons/discussions/4">Become a steward</a>: review changes and record consensus.</li>
+            <li><a href="https://github.com/nano-commons/nano-commons/tree/main/ncp">Review a proposal</a>: every change is decided in the open.</li>
+            <li><a href="https://github.com/nano-commons/nano-commons/blob/main/CONTRIBUTING.md">Contribute code or documents</a>, signed off under the DCO.</li>
+            <li><a href="https://github.com/nano-commons/nano-commons/blob/main/SECURITY.md">Report a vulnerability</a> privately.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="verify">
+    <div class="wrap">
+      <h2>Verify us</h2>
+      <p class="sub">Do not take this page's word for it.</p>
+      <div class="scroll">
+        <table>
+          <tbody>
+            <tr><td>Source</td><td><a href="https://github.com/nano-commons/nano-commons">GitHub</a> · mirror on <a href="https://codeberg.org/nano-commons/nano-commons">Codeberg</a></td></tr>
+            <tr><td>Citable record</td><td><a href="https://doi.org/10.5281/zenodo.24423522">DOI 10.5281/zenodo.24423522</a></td></tr>
+            <tr><td>Archives</td><td>Zenodo · Software Heritage · Internet Archive</td></tr>
+            <tr><td>Signing key</td><td><code>SHA256:bCFDHSkDYcpZKW/3G/Ze21e9kD4TiG8+C9TmhHqg/k0</code> (see <a href="https://github.com/nano-commons/nano-commons/blob/main/STEWARDS.md">STEWARDS.md</a>)</td></tr>
+            <tr><td>Governance</td><td><a href="https://github.com/nano-commons/nano-commons/blob/main/GOVERNANCE.md">Consensus only</a>. The founder has renounced every special right.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="notoken">There is no Nano-Commons token, and there never will be. Any offer of one is a scam.</p>
+    <p>Initiated by Krittidet Chanthake in November 2026 and dedicated to the global public commons.</p>
+    <p>Code: AGPL-3.0-or-later. Documents and this page: CC BY-SA 4.0. This page loads nothing from third parties and sets no cookies.</p>
+  </div>
+</footer>
+
+</body>
+</html>

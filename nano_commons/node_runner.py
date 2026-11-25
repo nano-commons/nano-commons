@@ -495,10 +495,17 @@ class NanoCommonsMesh:
         }
 
     def _alarm_workers_now_correct(self, answers: Dict[str, str], expected: str) -> bool:
-        alarm_workers = self.canary_alarm["workers"]
-        if not set(alarm_workers) <= set(answers):
+        # Quarantined workers have zero weight and no say, so they are not required to
+        # re-answer. Without this, an alarm whose failing workers were all quarantined could
+        # never clear: their combined weight is 0 and the check below fails closed.
+        required = [w for w in self.canary_alarm["workers"] if not self.nodes[w].quarantined]
+        if not required:
+            # Every failing worker is quarantined. This canary passed, and admission already
+            # required at least min_workers non-quarantined workers, so the honest remainder decides.
+            return True
+        if not set(required) <= set(answers):
             return False
-        weights = zone_capped_weights([self.nodes[w] for w in alarm_workers], self.zone_weight_cap)
+        weights = zone_capped_weights([self.nodes[w] for w in required], self.zone_weight_cap)
         return _wrong_fraction(weights, answers, expected) + _EPS < 0.5
 
     def _append_checkpoint(self, packet: NanoAgentPacket, digest: str, verdict: str,

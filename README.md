@@ -1,5 +1,7 @@
 # The Nano-Commons Protocol
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24423522.svg)](https://doi.org/10.5281/zenodo.24423522)
+
 **Small minds, verified together, owned by everyone.**
 
 Initiated by **Krittidet Chanthake** (November 2026) and dedicated to the global public commons.
@@ -179,3 +181,4 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUC
 ## Citing
 
 See [CITATION.cff](CITATION.cff): *The Nano-Commons Protocol*, initiated by Krittidet Chanthake, and the Nano-Commons contributors.
+DOI (all versions): [10.5281/zenodo.24423522](https://doi.org/10.5281/zenodo.24423522)
